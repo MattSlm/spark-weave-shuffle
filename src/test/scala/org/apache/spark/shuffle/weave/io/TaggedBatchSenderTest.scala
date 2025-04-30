@@ -1,5 +1,4 @@
-import org.apache.spark.shuffle.weave.io.TaggedBatchSender
-import org.apache.spark.shuffle.weave.io.TaggedBatchSenderParallel
+package org.apache.spark.shuffle.weave.io
 
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -11,7 +10,10 @@ class TaggedBatchSenderTest extends AnyFunSuite {
     val sender = new TaggedBatchSender[String, String](
       numBins = 2,
       batchSize = 3,
-      send = (bin, batch) => flushed.append((bin, batch))
+      send = (bin, batch) => {
+        println(s"[Flush] bin=$bin => ${batch.mkString(", ")}")
+        flushed.append((bin, batch))
+      }
     )
 
     sender.addReal(0, "k1", "v1")
@@ -29,7 +31,10 @@ class TaggedBatchSenderTest extends AnyFunSuite {
     val sender = new TaggedBatchSenderParallel[String, String](
       numBins = 1,
       batchSize = 2,
-      send = (bin, isFake, records) => flushed.append((bin, isFake, records))
+      send = (bin, isFake, records) => {
+        println(s"[Flush] bin=$bin isFake=$isFake => ${records.mkString(", ")}")
+        flushed.append((bin, isFake, records))
+      }
     )
 
     sender.addReal(0, "k1", "v1")
@@ -41,4 +46,4 @@ class TaggedBatchSenderTest extends AnyFunSuite {
     assert(flushed.count(_._2 == true) == 1)
     assert(flushed.exists(_._3.exists(_._1 == "k3")))
   }
-}
+}  
