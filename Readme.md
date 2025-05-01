@@ -114,4 +114,4 @@ spark-submit \
 
 ## 📚 Related Projects
 
-- [spool](https://github.com/yourusername/spool): Spark cluster launcher optimized for weave-shuffle-based evaluations.
+- [spool](https://github.com/MattSlm/spark-spool.git): Spark cluster launcher optimized for weave-shuffle-based evaluations.
