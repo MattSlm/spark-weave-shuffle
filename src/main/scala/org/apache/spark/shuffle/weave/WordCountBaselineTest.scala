@@ -1,6 +1,7 @@
 package org.apache.spark.shuffle.weave
 
 import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.shuffle.weave.registry.WeaveRegistry
 
 object WordCountBaselineTest {
   def main(args: Array[String]): Unit = {
@@ -10,6 +11,10 @@ object WordCountBaselineTest {
       .set("spark.shuffle.manager", "org.apache.spark.shuffle.weave.BaselineShuffleManager")
 
     val sc = new SparkContext(conf)
+
+    // ✅ Wait for reducers before mappers begin
+    val numReducers = 4
+    WeaveRegistry.initBarrier(numReducers)
 
     val lines = sc.parallelize(Seq(
       "hello world",

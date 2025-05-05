@@ -1,23 +1,19 @@
 package org.apache.spark.shuffle.weave.registry
 
-import scala.collection.concurrent.TrieMap
+import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Shared reducer address registry (used from driver, broadcast to mappers).
- */
 object WeaveRegistry {
+  private val reducerAddresses = new ConcurrentHashMap[Int, (String, Int)]()
 
-  private val registry = TrieMap.empty[Int, (String, Int)] // partitionId -> (host, port)
-
-  def register(partitionId: Int, host: String, port: Int): Unit = {
-    registry.put(partitionId, (host, port))
+  def registerAddress(bin: Int, host: String, port: Int): Unit = {
+    reducerAddresses.put(bin, (host, port))
   }
 
-  def lookup(partitionId: Int): Option[(String, Int)] = {
-    registry.get(partitionId)
+  def lookup(bin: Int): Option[(String, Int)] = {
+    Option(reducerAddresses.get(bin))
   }
 
-  def all(): Map[Int, (String, Int)] = registry.readOnlySnapshot().toMap
-
-  def clear(): Unit = registry.clear()
+  def clear(): Unit = {
+    reducerAddresses.clear()
+  }
 }
