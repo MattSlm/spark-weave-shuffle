@@ -1,38 +1,34 @@
+enablePlugins(AssemblyPlugin)
+
 name := "spark-weave-shuffle"
+version := "0.1.0"
+scalaVersion := "2.12.17"
+organization := "org.apache.spark.shuffle.weave"
 
 import sbtprotoc.ProtocPlugin.autoImport._
 
-version := "0.1.0"
-
-scalaVersion := "2.12.17"
-
-organization := "org.apache.spark.shuffle.weave"
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "3.2.2" % "provided",
-  "org.apache.spark" %% "spark-sql"  % "3.2.2" % "provided",
-  "org.scalatest"    %% "scalatest"  % "3.2.9" % "test",
-  "org.apache.commons" % "commons-math3" % "3.6.1"
+  "org.apache.spark" %% "spark-core" % "3.2.2" excludeAll(
+    ExclusionRule(organization = "io.netty")
+  ),
+  "org.apache.spark" %% "spark-sql" % "3.2.2" excludeAll(
+    ExclusionRule(organization = "io.netty")
+  ),
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf"
 )
 
-libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test
-
-scalacOptions ++= Seq(
-  "-deprecation",
-  "-feature",
-  "-unchecked",
-  "-encoding", "utf8"
-)
-
-javacOptions ++= Seq(
-  "-source", "1.8",
-  "-target", "1.8"
+Compile / PB.targets := Seq(
+  PB.gens.java -> (Compile / sourceManaged).value,
+  scalapb.gen(javaConversions = true) -> (Compile / sourceManaged).value
 )
 
 ThisBuild / versionScheme := Some("early-semver")
- 
-Compile / PB.targets := Seq(
-  scalapb.gen() -> (Compile / sourceManaged).value
-)
+ThisBuild / resolvers += Resolver.sonatypeRepo("releases")
+
+assembly / assemblyMergeStrategy := {
+  case PathList("git.properties") => MergeStrategy.discard
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
