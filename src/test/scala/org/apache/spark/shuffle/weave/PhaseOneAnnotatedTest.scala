@@ -7,7 +7,7 @@ import org.scalatest.funsuite.AnyFunSuite
 
 import scala.collection.mutable
 
-class RshufHistogramLocalTest extends AnyFunSuite {
+class PhaseOneAnnotatedTest extends AnyFunSuite {
 
   test("rshuf + histogram + bshuf completes pipeline locally with logs") {
     val numBins = 5
@@ -65,7 +65,7 @@ class RshufHistogramLocalTest extends AnyFunSuite {
     println("[Stage 7] Final bin distribution:")
     finalBins.zipWithIndex.foreach { case (records, i) =>
       val keys = records.map(_._1)
-      val counts = keys.groupMapReduce(identity)(_ => 1)(_ + _)
+      val counts = keys.groupBy(identity).map { case (k, v) => k -> v.size }
       println(f"  Bin $i: ${records.size} records, key breakdown: $counts")
     }
 

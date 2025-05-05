@@ -4,7 +4,7 @@ import sbtprotoc.ProtocPlugin.autoImport._
 
 version := "0.1.0"
 
-scalaVersion := "2.12.15"
+scalaVersion := "2.12.17"
 
 organization := "org.apache.spark.shuffle.weave"
 
@@ -16,6 +16,8 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf"
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test
 
 scalacOptions ++= Seq(
   "-deprecation",
